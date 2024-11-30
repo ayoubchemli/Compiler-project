@@ -1,4 +1,11 @@
 %{
+
+    #include <stdio.h>                           //added
+    #include <stdlib.h>
+    #include <string.h>
+    #include "tokens.h"
+    #include "y.tab.h"
+
     int ligne = 1;
     int const_entiere;
     float const_float;
@@ -14,68 +21,108 @@ CONST_ENTIERE_NON_SIGN [0-9]+
 OP_ARTH [+\-*/]
 OP_LOGQ (&&|\|\||!)
 
+CHAINE \"[^\"]*\"                           //added
+
 %%
-VAR_GLOBAL  { printf("MOT-CLE : VAR_GLOBAL\n"); } 
-DECLARATION { printf("MOT-CLE : DECLARATION\n");  } 
-INSTRUCTION { printf("MOT-CLE : INSTRUCTION \n");  }
-INTEGER { printf("MOT-CLE : INTEGER\n");  }
-FLOAT { printf("MOT-CLE : FLOAT\n");  }
-CHAR { printf("MOT-CLE : CHAR \n");  }
-CONST { printf("MOT-CLE : CONST\n");  }
-READ { printf("MOT-CLE : READ\n");  }
-WRITE { printf("MOT-CLE : WRITE\n");  }
-IF { printf("MOT-CLE : IF\n");  }
-ELSE { printf("MOT-CLE : ELSE\n");  }
-FOR { printf("MOT-CLE : FOR\n");  }
 
-{IDF} { printf("IDF : %s\n", yytext);  }
-{CONST_FLOAT_SIGN} { printf("Constante reele signee : %s\n", yytext);  }
-{CONST_FLOAT_NON_SIGN} { printf("Constante reele non signee : %s\n", yytext);  }
-{CONST_ENTIERE_SIGN} { 
-    const_entiere = atoi(yytext); 
-    if (const_entiere >= -32768 && const_entiere <= 32767) {
+"VAR_GLOBAL"    { printf("MOT-CLE : VAR_GLOBAL\n"); return VAR_GLOBAL; }
+"DECLARATION"   { printf("MOT-CLE : DECLARATION\n"); return DECLARATION; }
+"INSTRUCTION"   { printf("MOT-CLE : INSTRUCTION\n"); return INSTRUCTION; }
+"INTEGER"       { printf("MOT-CLE : INTEGER\n"); return INTEGER; }
+"FLOAT"         { printf("MOT-CLE : FLOAT\n"); return FLOAT; }
+"CHAR"          { printf("MOT-CLE : CHAR\n"); return CHAR; }
+"CONST"         { printf("MOT-CLE : CONST\n"); return CONST; }
+"READ"          { printf("MOT-CLE : READ\n"); return READ; }
+"WRITE"         { printf("MOT-CLE : WRITE\n"); return WRITE; }
+"IF"            { printf("MOT-CLE : IF\n"); return IF; }
+"ELSE"          { printf("MOT-CLE : ELSE\n"); return ELSE; }
+"FOR"           { printf("MOT-CLE : FOR\n"); return FOR; }
+
+{IDF} {
+    printf("IDF : %s\n", yytext);
+    yylval.str = strdup(yytext);
+    return IDF;
+}
+{CONST_FLOAT_SIGN} {
+    printf("Constante reele signee : %s\n", yytext);
+    char* temp = strdup(yytext + 1);  // Skip opening parenthesis
+    temp[strlen(temp) - 1] = '\0';     // Remove closing parenthesis
+    yylval.fnum = atof(temp);
+    free(temp);
+    return CONST_FLOAT_SIGN;
+}
+{CONST_FLOAT_SIGN} { 
+    printf("Constante reele signee : %s\n", yytext);
+    yylval.fnum = atof(yytext);
+    return CONST_FLOAT_NON_SIGN;
+}
+{CONST_FLOAT_NON_SIGN} {
+    printf("Constante reele non signee : %s\n", yytext);
+    yylval.fnum = atof(yytext);
+    return CONST_FLOAT_NON_SIGN;
+}
+{CONST_ENTIERE_SIGN} {
+    char* temp = strdup(yytext + 1);  // Skip opening parenthesis
+    temp[strlen(temp) - 1] = '\0';     // Remove closing parenthesis
+    int value = atoi(temp);
+    free(temp);
+    if (value >= -32768 && value <= 32767) {
         printf("Constante entiere signee : %s\n", yytext);
+        yylval.num = value;
+        return CONST_ENTIERE_SIGN;
     } else {
-        printf("valeur incorrecte!");
+        printf("Error at line %d: Integer value out of range [-32768, 32767]\n", ligne);    //convert to french
     }
 }
-{CONST_ENTIERE_NON_SIGN} { 
-    const_entiere = atoi(yytext); 
-    if (const_entiere <= 32767) {
+{CONST_ENTIERE_NON_SIGN} {
+    int value = atoi(yytext);
+    if (value <= 32767) {
         printf("Constante entiere non signee : %s\n", yytext);
+        yylval.num = value;
+        return CONST_ENTIERE_NON_SIGN;
     } else {
-        printf("valeur incorrecte!");
+        printf("Error at line %d: Integer value out of range [0, 32767]\n", ligne);
     }
 }
 
-{OP_ARTH} { printf("OPERATEUR ARITHMETIQUE : %s\n", yytext);  }
-{OP_LOGQ} { printf("OPERATEUR LOGIQUE : %s\n", yytext);  }
-"%%"[^\n]* {} 
-[ \t] {}       
-\n { ligne++; }
-[{};,()] { printf("SEPARATEUR : %s\n", yytext); }
-">" { printf("OP_COMP : %s \n", yytext); }
-"<" { printf("OP_COMP : %s \n", yytext); }
-">=" { printf("OP_COMP : %s \n", yytext); }
-"==" { printf("OP_COMP : %s \n", yytext); }
-"!=" { printf("OP_COMP : %s \n", yytext); }
+{OP_ARTH} { 
+    printf("OPERATEUR ARITHMETIQUE : %s\n", yytext);
+    yylval.str = strdup(yytext);
+    return OP_ARTH;
+}
+{OP_LOGQ} {
+    printf("OPERATEUR LOGIQUE : %s\n", yytext);
+    yylval.str = strdup(yytext);
+    return OP_LOGQ;
+}
+
+">"  { return OP_COMP; }
+"<"  { return OP_COMP; }
+">=" { return OP_COMP; }
+"<=" { return OP_COMP; }
+"==" { return OP_COMP; }
+"!=" { return OP_COMP; }
+"="  { return AFFECT; }
+
+"%%"[^\n]* { /* Ignore comments */ }
+
+{CHAINE} {
+    yylval.str = strdup(yytext);
+    return CHAINE;
+}
+
+[ \t]   { /* Ignore whitespace */ }
+\n      { ligne++; }
+
+"{"     { return '{'; }
+"}"     { return '}'; }
+"("     { return '('; }
+")"     { return ')'; }
+"["     { return '['; }
+"]"     { return ']'; }
+","     { return ','; }
+";"     { return ';'; }
+":"     { return ':'; }
+
 . { printf("Erreur lexicale a la ligne %d, Caractere %s non reconnu\n", ligne, yytext); }
 
-%%
-int main(int argc, char **argv) {
-    if (argc > 1) {
-        yyin = fopen(argv[1], "r");
-        if (!yyin) {
-            perror("Erreur d'ouverture du fichier");
-            return 1;
-        }
-    }
-
-    yylex();
-
-    if (yyin) {
-        fclose(yyin);
-    }
-
-    return 0;
-}
