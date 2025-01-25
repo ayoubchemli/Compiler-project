@@ -1,0 +1,32 @@
+VAR_GLOBAL {
+    %%ce bloc est le meme que declaration
+}
+DECLARATION {
+INTEGER A ;
+INTEGER B ;
+CHAR D ;
+CHAR  Ap[1];
+INTEGER Tab[1];
+CONST FLOAT Alpha= (-3.5);
+CONST FLOAT Beta = 3.2;
+CONST INTEGER D12 = (-5) ;
+CHAR Idf[1];
+CONST CHAR Id[3] = "45";
+FLOAT X,Y;
+INTEGER P ;
+INTEGER I ; 
+INTEGER  N ; 
+}
+INSTRUCTION {
+READ(P);
+Id = "22";
+I = (-3.77);  
+I=I+1;
+FOR(I=0:2:N){I=I+1;}
+FOR(I =0 :2 :N){ FOR( I=0 :2 :N){ B = B+1;} }
+%%IF (Aa > Bb) { Cc=E+2.6; } ELSE{ Cc=0; }
+%%IF ( (A<B) || (A>C) ) { Cc=E+2.6; } ELSE{ Cc=0; }
+}
+%% Chaque instruction doit se terminer par un point virgule 
+%% IDF doit comment par une lettre majuscule suivi d'une lettre miniscule et chiffre
+

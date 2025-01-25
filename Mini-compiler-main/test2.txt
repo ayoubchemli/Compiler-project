@@ -1,0 +1,95 @@
+%% Test file for error handling in MinING compiler
+
+VAR_GLOBAL {
+    INTEGER A ;
+}
+
+DECLARATION {
+    %% Type errors
+    %%INTEGER Num1;      %% Error: type mismatch (float to int)
+    %%FLOAT Fnum1 = "string";   %% Error: type mismatch (string to float)
+    %%CHAR Str1 = 42;           %% Error: type mismatch (int to char)
+    INTEGER Var1;
+    
+    %% Array errors
+    %%CHAR Tab1[1];          %% Error: array size must be > 0
+    %%INTEGER Tab2[5];         %% Error: negative array size
+    %%INTEGER Tab3[3.5];        %% Error: non-integer array size
+    
+    %% Constant errors
+    CONST INTEGER Const1= 3 ;     %% Error: constant declared without value
+    %%CONST INTEGER Const2 = 3.14;  %% Error: type mismatch
+    %%CONST FLOAT Const3 = 999999999;  %% Error: value out of range
+    
+    %% Multiple declaration errors
+    %%INTEGER Var1;
+    %%INTEGER Var1;             %% Error: variable already declared
+    
+    %% Missing semicolons
+    INTEGER Err1              %% Error: missing semicolon
+    ;FLOAT Err2,Err3;          %% Error: missing semicolon
+}
+
+INSTRUCTION {
+    %% Undeclared variables
+    %%Undeclared = 5;          %% Error: variable not declared
+    
+    %% Type mismatch in operations
+    %%Var1 = "string";         %% Error: assigning string to INTEGER
+    %%Var1 = Fnum1;            %% Error: assigning FLOAT to INTEGER
+    
+    
+    %% Operator errors
+    %%Var1 = 5 ++ 3;           %% Error: invalid operator
+    
+    %% Logical operator errors
+    %%IF (Const1 && 5) {         %% Error: non-boolean in logical operation
+      %%  Var1 = 1;
+    %%}
+    
+    %% FOR loop errors
+    %%FOR(Var1 = 0 : 0 : -1) {  %% Error: invalid loop bounds
+      %%  Var1 = 1;
+    %%}
+    
+    %%FOR(Var1 = 1.5 : 1 : 10) {  %% Error: non-integer step
+      %%  Var1 = 1;
+    %%}
+    
+    %% Missing parentheses/braces
+    %%IF Var1 > 0 {            %% Error: missing parentheses in IF
+      %%  Var1 = 1;
+    %%}
+    
+    %%IF (Var1 > 0)            %% Error: missing braces
+      %%  Var1 = 1;
+    
+    %% Constant modification
+    %%Const1 = 42;             %% Error: modifying a constant
+    
+    %% Type errors in expressions
+    %%Num1 = "string" + 5;     %% Error: invalid operands
+    %%Var1 = Str1 * 3;         %% Error: invalid operation on CHAR
+    
+    
+    %% Invalid comparison
+    %%IF ("string" > 5) {      %% Error: invalid comparison operands
+      %%  Var1 = 1;
+    %%}
+    
+    %% READ/WRITE errors
+    %%READ();                  %% Error: missing argument
+    %%WRITE;                   %% Error: missing parentheses
+    %%READ(Const1);            %% Error: reading into a constant
+    
+    %% Syntax errors
+    %%Var1 = (5 + 3;          %% Error: unmatched parenthesis
+    %%Var1 = 5 + );           %% Error: unmatched parenthesis
+    
+    %% Out of range values
+    Var1 = 40000;           %% Error: INTEGER out of range (-32768 to 32767)
+    
+    %% Missing semicolons
+    %%Var1 = 5                %% Error: missing semicolon
+    %%READ(Var1)              %% Error: missing semicolon
+}

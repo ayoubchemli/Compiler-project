@@ -1,0 +1,75 @@
+VAR_GLOBAL {
+    
+}
+
+DECLARATION {
+    %% Testing all possible type declarations
+    INTEGER Var1, Var2, Var3;
+    FLOAT Fvar1, Fvar2;
+    CHAR Cvar1, Cvar2;
+    INTEGER Global1;
+    FLOAT Float1;
+    CHAR Char1;
+    
+    %% Testing arrays with different sizes
+    INTEGER Tab1[5];
+    FLOAT Ftab1[10];
+    CHAR Stab1[20];
+    
+    %% Testing constants of all types
+    CONST INTEGER Max1 = 32767;
+    CONST INTEGER Min1 = (-32768);
+    CONST INTEGER Zero1 = 0;
+    CONST FLOAT Pi1 = 3.14159;
+    CONST FLOAT Neg1 = (-1.5);
+    CONST FLOAT Pos1 = (+2.5);
+    CONST CHAR Ch1 = "A";
+    CONST CHAR Str1[5] = "Test";
+    
+    %% Testing maximum identifier length (8 chars)
+    INTEGER Abcd1234;
+    FLOAT Test1234;
+    
+    %% Variables for loop testing
+    INTEGER Index1;
+    INTEGER Count1;
+    INTEGER Limit1;
+}
+
+INSTRUCTION {
+    %% Testing basic assignments
+    Var1 = 42;
+    Fvar1 = 3.14;
+    Cvar1 = "X";
+    
+    %% Testing signed numbers
+    Var1 = (-25);
+    Fvar1 = (-3.14);
+    Var2 = (+42);
+    
+    
+    %% Testing nested IF statements
+    IF (Var1 > 0) {
+        IF (Var2 > 0) {
+            Var3 = 1;
+        } ELSE {
+            Var3 = 2;
+        }
+    } ELSE {
+        Var3 = 3;
+    }
+    
+    %% Testing comparison operators
+    IF (Var1 > Var2) { Var3 = 1; }
+    IF (Var1 < Var2) { Var3 = 2; }
+    IF (Var1 >= Var2) { Var3 = 3; }
+    IF (Var1 <= Var2) { Var3 = 4; }
+    IF (Var1 == Var2) { Var3 = 5; }
+    IF (Var1 != Var2) { Var3 = 6; }
+    
+    %% Testing FOR loops
+    FOR(Index1 = 0 : 1 : Index1) {
+        Var1 = Var1 + 1;
+    }
+    
+}

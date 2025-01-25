@@ -1,0 +1,17 @@
+VAR_GLOBAL {
+    %%ce bloc est le meme que declaration%%
+}
+DECLARATION {
+FLOAT B ;
+INTEGER D ;
+INTEGER E ;
+INTEGER Tab[1];
+CONST FLOAT Alpha= (-3.5);
+CONST INTEGER Beta = 315;
+CONST INTEGER D12 = (-5.4) ;
+CONST CHAR P[0] = "4";
+FLOAT X,Y;
+}
+INSTRUCTION{
+
+}
